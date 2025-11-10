@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus"></i> Add Question to: 
+                        {% if session.get('language') == 'st' %}
+                            {{ quiz.title_st }}
+                        {% else %}
+                            {{ quiz.title_en }}
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="question_text_en" class="form-label">Question Text (English)</label>
+                                <textarea class="form-control" id="question_text_en" name="question_text_en" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="question_text_st" class="form-label">Question Text (Sesotho)</label>
+                                <textarea class="form-control" id="question_text_st" name="question_text_st" rows="3" required></textarea>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Options</h5>
+                        
+                        {% for option in ['a', 'b', 'c', 'd'] %}
+                        <div class="row mb-3 option-row" id="option{{ option|upper }}_row">
+                            <div class="col-md-5">
+                                <label class="form-label">Option {{ option|upper }} (English)</label>
+                                <input type="text" class="form-control option-en" 
+                                       name="option_{{ option }}_en" id="option_{{ option }}_en"
+                                       {% if option in ['a', 'b'] %}required{% endif %}>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Option {{ option|upper }} (Sesotho)</label>
+                                <input type="text" class="form-control option-st" 
+                                       name="option_{{ option }}_st" id="option_{{ option }}_st"
+                                       {% if option in ['a', 'b'] %}required{% endif %}>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input class="form-check-input correct-option" type="radio" 
+                                           name="correct_option" id="correct_{{ option }}" 
+                                           value="{{ option }}" {% if option == 'a' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="correct_{{ option }}">
+                                        Correct
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="explanation_en" class="form-label">Explanation (English)</label>
+                                <textarea class="form-control" id="explanation_en" name="explanation_en" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="explanation_st" class="form-label">Explanation (Sesotho)</label>
+                                <textarea class="form-control" id="explanation_st" name="explanation_st" rows="2"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="points" class="form-label">Points</label>
+                                <input type="number" class="form-control" id="points" name="points" value="1" min="1" max="5">
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Add Question
+                            </button>
+                            <a href="{{ url_for('manage_questions', quiz_id=quiz.id) }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Optional: Add dynamic option management
+    const optionRows = document.querySelectorAll('.option-row');
+    
+    optionRows.forEach(row => {
+        const enInput = row.querySelector('.option-en');
+        const stInput = row.querySelector('.option-st');
+        
+        // Make options C and D required if they have any value
+        [enInput, stInput].forEach(input => {
+            input.addEventListener('input', function() {
+                if (row.id.includes('C') || row.id.includes('D')) {
+                    const hasValue = enInput.value.trim() !== '' || stInput.value.trim() !== '';
+                    enInput.required = hasValue;
+                    stInput.required = hasValue;
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

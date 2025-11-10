@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center mb-4">
+                    <h1 class="display-4 fw-bold mb-0">{{ _('welcome') }}</h1>
+                </div>
+                <p class="lead">Protecting Matebeleng Carwash through cybersecurity education and awareness.</p>
+                <p>Learn how to identify cyber threats, protect sensitive information, and secure our digital environment.</p>
+                
+                <div class="mt-4">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-3">
+                            <i class="fas fa-user-plus"></i> {{ _('register') }}
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> {{ _('login') }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-tachometer-alt"></i> {{ _('dashboard') }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/Matebeleng logo.png') }}" 
+                     alt="Matebeleng Carwash Logo" 
+                     style="max-height: 250px; width: auto;"
+                     class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-graduation-cap fa-3x text-primary mb-3"></i>
+                    <h3>Interactive Quizzes</h3>
+                    <p>Test your cybersecurity knowledge with engaging quizzes and learn through immediate feedback.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-certificate fa-3x text-success mb-3"></i>
+                    <h3>Earn Certificates</h3>
+                    <p>Receive certificates for your achievements and demonstrate your cybersecurity awareness.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-language fa-3x text-info mb-3"></i>
+                    <h3>Bilingual Support</h3>
+                    <p>Access content in both English and Sesotho for better understanding and inclusivity.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

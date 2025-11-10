@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-trophy"></i> Achievements</h2>
+            <p class="text-muted">Track your cybersecurity learning milestones</p>
+        </div>
+    </div>
+
+    <!-- Progress Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h3>{{ earned_achievements|length }}</h3>
+                    <p class="mb-0">Achievements Earned</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h3>{{ all_achievements|length }}</h3>
+                    <p class="mb-0">Total Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h3>{{ user_stats.total_attempts or 0 }}</h3>
+                    <p class="mb-0">Quiz Attempts</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center bg-warning text-white">
+                <div class="card-body">
+                    <h3>{{ user_stats.completed_resources or 0 }}</h3>
+                    <p class="mb-0">Resources Completed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Earned Achievements -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-check-circle"></i> Earned Achievements</h5>
+                </div>
+                <div class="card-body">
+                    {% if earned_achievements %}
+                    <div class="row">
+                        {% for achievement in earned_achievements %}
+                        <div class="col-12 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-{{ achievement.icon }} fa-2x text-success"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1">
+                                                {% if session.get('language') == 'st' %}
+                                                    {{ achievement.name_st }}
+                                                {% else %}
+                                                    {{ achievement.name_en }}
+                                                {% endif %}
+                                            </h6>
+                                            <p class="card-text small mb-1">
+                                                {% if session.get('language') == 'st' %}
+                                                    {{ achievement.description_st }}
+                                                {% else %}
+                                                    {{ achievement.description_en }}
+                                                {% endif %}
+                                            </p>
+                                            <small class="text-muted">
+                                                Earned: {{ achievement.earned_at.strftime('%Y-%m-%d') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No achievements earned yet. Keep learning and taking quizzes to earn achievements!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Achievements -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-lock"></i> Available Achievements</h5>
+                </div>
+                <div class="card-body">
+                    {% for achievement in all_achievements %}
+                        {% set earned = false %}
+                        {% for earned_ach in earned_achievements %}
+                            {% if earned_ach.id == achievement.id %}
+                                {% set earned = true %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if not earned %}
+                        <div class="col-12 mb-3">
+                            <div class="card border-secondary opacity-75">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-{{ achievement.icon }} fa-2x text-muted"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="card-title mb-1 text-muted">
+                                                {% if session.get('language') == 'st' %}
+                                                    {{ achievement.name_st }}
+                                                {% else %}
+                                                    {{ achievement.name_en }}
+                                                {% endif %}
+                                            </h6>
+                                            <p class="card-text small mb-1 text-muted">
+                                                {% if session.get('language') == 'st' %}
+                                                    {{ achievement.description_st }}
+                                                {% else %}
+                                                    {{ achievement.description_en }}
+                                                {% endif %}
+                                            </p>
+                                            <div class="progress" style="height: 6px;">
+                                                {% set progress = 0 %}
+                                                {% if achievement.criteria_type == 'attempts' %}
+                                                    {% set progress = (user_stats.total_attempts / achievement.criteria_value * 100)|round %}
+                                                {% elif achievement.criteria_type == 'score' %}
+                                                    {% set progress = (user_stats.best_score / achievement.criteria_value * 100)|round %}
+                                                {% elif achievement.criteria_type == 'completion' %}
+                                                    {% set progress = (user_stats.completed_resources / achievement.criteria_value * 100)|round %}
+                                                {% endif %}
+                                                {% set progress = [progress, 100]|min %}
+                                                <div class="progress-bar bg-secondary" style="width: {{ progress }}%"></div>
+                                            </div>
+                                            <small class="text-muted">
+                                                Progress: {{ progress }}%
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

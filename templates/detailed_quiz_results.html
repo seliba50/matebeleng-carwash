@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('quizzes') }}">Quizzes</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('quiz_results', attempt_id=attempt.id) }}">Results</a></li>
+                    <li class="breadcrumb-item active">Detailed Analysis</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-{% if attempt.percentage >= 80 %}success{% elif attempt.percentage >= 60 %}warning{% else %}danger{% endif %} text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-bar"></i> Detailed Quiz Analysis
+                    </h4>
+                    <small>
+                        Quiz: 
+                        {% if session.get('language') == 'st' %}
+                            {{ attempt.title_st }}
+                        {% else %}
+                            {{ attempt.title_en }}
+                        {% endif %}
+                        | Score: {{ attempt.score }}/{{ attempt.total_questions }} ({{ attempt.percentage }}%)
+                    </small>
+                </div>
+                <div class="card-body">
+                    <!-- Question-by-question breakdown -->
+                    {% for result in detailed_results %}
+                    <div class="question-breakdown mb-4 p-3 border rounded {% if not result.is_correct %}bg-light{% endif %}">
+                        <h5>Question {{ loop.index }}</h5>
+                        <p class="fw-bold">
+                            {% if session.get('language') == 'st' %}
+                                {{ result.question_text_st }}
+                            {% else %}
+                                {{ result.question_text_en }}
+                            {% endif %}
+                        </p>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Your Answer:</h6>
+                                <p class="{% if result.is_correct %}text-success{% else %}text-danger{% endif %}">
+                                    {% if result.user_answer %}
+                                        {{ result.user_answer|upper }}. 
+                                        {% if session.get('language') == 'st' %}
+                                            {{ result.user_answer_text_st }}
+                                        {% else %}
+                                            {{ result.user_answer_text_en }}
+                                        {% endif %}
+                                        {% if result.is_correct %}
+                                            <i class="fas fa-check text-success"></i>
+                                        {% else %}
+                                            <i class="fas fa-times text-danger"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-warning">Not answered</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Correct Answer:</h6>
+                                <p class="text-success">
+                                    {{ result.correct_option|upper }}. 
+                                    {% if session.get('language') == 'st' %}
+                                        {{ result.correct_answer_text_st }}
+                                    {% else %}
+                                        {{ result.correct_answer_text_en }}
+                                    {% endif %}
+                                    <i class="fas fa-check text-success"></i>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {% if result.explanation_en or result.explanation_st %}
+                        <div class="explanation mt-2 p-2 bg-info text-dark rounded">
+                            <strong>Explanation:</strong><br>
+                            {% if session.get('language') == 'st' %}
+                                {{ result.explanation_st }}
+                            {% else %}
+                                {{ result.explanation_en }}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    {% if recommendations %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Recommended Learning Resources</h5>
+                </div>
+                <div class="card-body">
+                    <p>Based on your performance, we recommend these resources to improve your knowledge:</p>
+                    <div class="row">
+                        {% for resource in recommendations %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6>
+                                        {% if session.get('language') == 'st' %}
+                                            {{ resource.title_st }}
+                                        {% else %}
+                                            {{ resource.title_en }}
+                                        {% endif %}
+                                    </h6>
+                                    <p class="small">
+                                        {% if session.get('language') == 'st' %}
+                                            {{ resource.description_st|truncate(100) }}
+                                        {% else %}
+                                            {{ resource.description_en|truncate(100) }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('view_learning_resource', resource_id=resource.id) }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-book-open"></i> Study
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user-plus"></i> {{ _('register') }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">{{ _('username') }}</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">{{ _('email') }}</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{{ _('password') }}</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">{{ _('confirm_password') }}</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">{{ _('role') }}</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="user">{{ _('user') }}</option>
+                                <option value="instructor">{{ _('instructor') }}</option>
+                                <option value="admin">{{ _('admin') }}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="language" class="form-label">{{ _('language') }}</label>
+                            <select class="form-select" id="language" name="language" required>
+                                <option value="en">{{ _('english') }}</option>
+                                <option value="st">{{ _('sesotho') }}</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-user-plus"></i> {{ _('register_btn') }}
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('login') }}">{{ _('have_account') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

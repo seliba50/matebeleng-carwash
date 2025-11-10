@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-graduation-cap"></i> Learning Resources</h2>
+            <p class="text-muted">Enhance your cybersecurity knowledge with these educational materials</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h4>{{ learning_stats.completed_resources or 0 }}/{{ learning_stats.total_resources or 0 }}</h4>
+                            <small>Resources Completed</small>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>{{ (learning_stats.total_learning_time or 0)|round }} min</h4>
+                            <small>Total Learning Time</small>
+                        </div>
+                        <div class="col-md-4">
+                            <h4>{{ (stats.average_score or 0)|round }}%</h4>
+                            <small>Average Quiz Score</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Resources Grid -->
+    <div class="row">
+        {% for resource in resources %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-{% if resource.difficulty == 'beginner' %}success{% elif resource.difficulty == 'intermediate' %}warning{% else %}danger{% endif %} text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-{% if resource.resource_type == 'article' %}file-alt{% elif resource.resource_type == 'video' %}video{% elif resource.resource_type == 'guide' %}book{% else %}lightbulb{% endif %}"></i>
+                        {% if session.get('language') == 'st' %}
+                            {{ resource.title_st }}
+                        {% else %}
+                            {{ resource.title_en }}
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text small">
+                        {% if session.get('language') == 'st' %}
+                            {{ resource.description_st[:100] }}{% if resource.description_st|length > 100 %}...{% endif %}
+                        {% else %}
+                            {{ resource.description_en[:100] }}{% if resource.description_en|length > 100 %}...{% endif %}
+                        {% endif %}
+                    </p>
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">
+                            {% if session.get('language') == 'st' %}
+                                {{ resource.category_name_st }}
+                            {% else %}
+                                {{ resource.category_name_en }}
+                            {% endif %}
+                        </span>
+                        <span class="badge bg-{% if resource.difficulty == 'beginner' %}success{% elif resource.difficulty == 'intermediate' %}warning{% else %}danger{% endif %}">
+                            {{ resource.difficulty|title }}
+                        </span>
+                    </div>
+                    
+                    {% if resource.id in user_progress %}
+                        {% if user_progress[resource.id].completed %}
+                        <div class="text-success">
+                            <i class="fas fa-check-circle"></i> Completed
+                        </div>
+                        {% else %}
+                        <div class="text-warning">
+                            <i class="fas fa-clock"></i> In Progress
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('view_learning_resource', resource_id=resource.id) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-book-open"></i> Read More
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No learning resources available at the moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        {% if session.get('language') == 'st' %}
+                            {{ quiz.title_st }}
+                        {% else %}
+                            {{ quiz.title_en }}
+                        {% endif %}
+                    </h4>
+                    <small>
+                        {{ _('category') }}: 
+                        {% if session.get('language') == 'st' %}
+                            {{ quiz.category_name_st }}
+                        {% else %}
+                            {{ quiz.category_name_en }}
+                        {% endif %}
+                        | {{ _('difficulty') }}: {{ _(quiz.difficulty) }}
+                    </small>
+                </div>
+                <div class="card-body">
+                    <form id="quizForm" action="{{ url_for('submit_quiz', quiz_id=quiz.id) }}" method="POST">
+                        {% for question in questions %}
+                        <div class="question-container mb-4 p-3 border rounded">
+                            <h5 class="question-text">
+                                {{ loop.index }}. 
+                                {% if session.get('language') == 'st' %}
+                                    {{ question.question_text_st }}
+                                {% else %}
+                                    {{ question.question_text_en }}
+                                {% endif %}
+                            </h5>
+                            
+                            <div class="options-container">
+                                {% for option in ['a', 'b', 'c', 'd'] %}
+                                    {% set option_text_en = question['option_' + option + '_en'] %}
+                                    {% set option_text_st = question['option_' + option + '_st'] %}
+                                    
+                                    {% if option_text_en %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" 
+                                               name="question_{{ question.id }}" 
+                                               id="q{{ question.id }}_{{ option }}" 
+                                               value="{{ option }}" required>
+                                        <label class="form-check-label" for="q{{ question.id }}_{{ option }}">
+                                            {{ option|upper }}. 
+                                            {% if session.get('language') == 'st' %}
+                                                {{ option_text_st }}
+                                            {% else %}
+                                                {{ option_text_en }}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane"></i> {{ _('submit_quiz') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form validation
+    const form = document.getElementById('quizForm');
+    const questions = document.querySelectorAll('.question-container');
+    
+    form.addEventListener('submit', function(e) {
+        let allAnswered = true;
+        const unanswered = [];
+        
+        questions.forEach((question, index) => {
+            const questionId = question.querySelector('input[type="radio"]').name;
+            const answered = document.querySelector(`input[name="${questionId}"]:checked`);
+            
+            if (!answered) {
+                allAnswered = false;
+                unanswered.push(index + 1);
+            }
+        });
+        
+        if (!allAnswered) {
+            e.preventDefault();
+            alert(`Please answer all questions. Unanswered questions: ${unanswered.join(', ')}`);
+        }
+    });
+});
+</script>
+{% endblock %}

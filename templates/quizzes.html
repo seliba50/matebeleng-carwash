@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-question-circle"></i> {{ _('quizzes') }}</h2>
+            <p class="text-muted">Test your cybersecurity knowledge with our interactive quizzes</p>
+        </div>
+    </div>
+
+    {% if current_user.role == 'admin' %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{{ url_for('admin_quizzes') }}" class="btn btn-primary">
+                <i class="fas fa-cog"></i> Manage Quizzes (Admin)
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for quiz in quizzes %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-{% if quiz.difficulty == 'easy' %}success{% elif quiz.difficulty == 'medium' %}warning{% else %}danger{% endif %} text-white">
+                    <h5 class="mb-0">
+                        {% if session.get('language') == 'st' %}
+                            {{ quiz.title_st }}
+                        {% else %}
+                            {{ quiz.title_en }}
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{ _('category') }}:</strong> 
+                        {% if session.get('language') == 'st' %}
+                            {{ quiz.category_name_st }}
+                        {% else %}
+                            {{ quiz.category_name_en }}
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <strong>{{ _('difficulty') }}:</strong>
+                        <span class="badge bg-{% if quiz.difficulty == 'easy' %}success{% elif quiz.difficulty == 'medium' %}warning{% else %}danger{% endif %}">
+                            {{ _(quiz.difficulty) }}
+                        </span>
+                    </p>
+                    
+                    {% if quiz.id in user_scores %}
+                    <p class="card-text">
+                        <strong>{{ _('best_score') }}:</strong>
+                        <span class="badge bg-info">{{ user_scores[quiz.id] }}%</span>
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary w-100">
+                        {% if quiz.id in user_scores %}
+                            <i class="fas fa-redo"></i> Retake Quiz
+                        {% else %}
+                            <i class="fas fa-play"></i> {{ _('start_quiz') }}
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No quizzes available at the moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

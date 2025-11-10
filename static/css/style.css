@@ -1,0 +1,101 @@
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+    border-radius: 0 0 2rem 2rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn {
+    border-radius: 0.5rem;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 0.5rem;
+}
+
+.fas, .fab {
+    margin-right: 0.5rem;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .btn {
+        padding: 12px 16px;
+        font-size: 16px; /* Better touch targets */
+    }
+    
+    /* Improve form elements */
+    .form-control, .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        height: 44px;
+    }
+    
+    /* Better card layout */
+    .card {
+        margin-bottom: 1rem;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Table improvements */
+    .table-responsive {
+        font-size: 14px;
+    }
+    
+    /* Navigation improvements */
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+}
+
+/* Offline indicator */
+.offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #dc3545;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 10001;
+    display: none;
+}
+
+body.offline .offline-indicator {
+    display: block;
+}
+
+/* Touch-friendly improvements */
+.btn, .nav-link {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease;
+}

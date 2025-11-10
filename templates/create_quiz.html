@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus"></i> Create New Quiz</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="title_en" class="form-label">Quiz Title (English)</label>
+                                <input type="text" class="form-control" id="title_en" name="title_en" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="title_st" class="form-label">Quiz Title (Sesotho)</label>
+                                <input type="text" class="form-control" id="title_st" name="title_st" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="category_id" class="form-label">Category</label>
+                                <select class="form-select" id="category_id" name="category_id" required>
+                                    <option value="">Select Category</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}">
+                                        {{ category.name_en }} / {{ category.name_st }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="difficulty" class="form-label">Difficulty Level</label>
+                                <select class="form-select" id="difficulty" name="difficulty" required>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Create Quiz
+                            </button>
+                            <a href="{{ url_for('admin_quizzes') }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

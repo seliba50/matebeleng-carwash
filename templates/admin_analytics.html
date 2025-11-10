@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-chart-line"></i> Advanced Analytics</h2>
+            <p class="text-muted">Detailed system performance and user engagement metrics</p>
+        </div>
+    </div>
+
+    <!-- Usage Statistics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-tachometer-alt"></i> System Usage Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary">{{ usage_stats['Total Users'] or 0 }}</h4>
+                                <small class="text-muted">Total Users</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success">{{ usage_stats['Active Users (30 days)'] or 0 }}</h4>
+                                <small class="text-muted">Active Users (30d)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info">{{ usage_stats['Total Quiz Attempts'] or 0 }}</h4>
+                                <small class="text-muted">Quiz Attempts</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning">{{ usage_stats['Certificates Issued'] or 0 }}</h4>
+                                <small class="text-muted">Certificates</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <h4 class="text-danger">{{ usage_stats['Learning Resources Completed'] or 0 }}</h4>
+                                <small class="text-muted">Resources Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Category Performance -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Performance by Category</h5>
+                </div>
+                <div class="card-body">
+                    {% if category_performance %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Attempts</th>
+                                    <th>Avg Score</th>
+                                    <th>Unique Users</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in category_performance %}
+                                <tr>
+                                    <td>
+                                        {% if session.get('language') == 'st' %}
+                                            {{ category.category_name_st }}
+                                        {% else %}
+                                            {{ category.category_name_en }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ category.total_attempts }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if category.average_score >= 80 %}success{% elif category.average_score >= 60 %}warning{% else %}danger{% endif %}">
+                                            {{ "%.1f"|format(category.average_score or 0) }}%
+                                        </span>
+                                    </td>
+                                    <td>{{ category.unique_users }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No category performance data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- User Engagement -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-check"></i> User Engagement Metrics</h5>
+                </div>
+                <div class="card-body">
+                    {% if engagement_metrics %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Login Range</th>
+                                    <th>Users</th>
+                                    <th>Avg Quizzes</th>
+                                    <th>Avg Resources</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for metric in engagement_metrics %}
+                                <tr>
+                                    <td>{{ metric.login_range }} logins</td>
+                                    <td>{{ metric.user_count }}</td>
+                                    <td>{{ "%.1f"|format(metric.avg_quiz_attempts or 0) }}</td>
+                                    <td>{{ "%.1f"|format(metric.avg_resources_completed or 0) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No engagement data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Daily Activity (Last 30 Days)</h5>
+                </div>
+                <div class="card-body">
+                    {% if daily_activity %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Activities</th>
+                                    <th>Unique Users</th>
+                                    <th>Activity Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in daily_activity %}
+                                <tr>
+                                    <td>{{ day.date }}</td>
+                                    <td>{{ day.activity_count }}</td>
+                                    <td>{{ day.unique_users }}</td>
+                                    <td>
+                                        {% set activity_rate = (day.unique_users / (usage_stats['Total Users'] or 1) * 100) %}
+                                        <span class="badge bg-{% if activity_rate >= 50 %}success{% elif activity_rate >= 20 %}warning{% else %}danger{% endif %}">
+                                            {{ "%.1f"|format(activity_rate) }}%
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No daily activity data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

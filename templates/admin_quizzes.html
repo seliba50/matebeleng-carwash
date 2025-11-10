@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-cog"></i> Quiz Management</h2>
+                <a href="{{ url_for('create_quiz') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New Quiz
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Quizzes</h5>
+                </div>
+                <div class="card-body">
+                    {% if quizzes %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title (EN)</th>
+                                    <th>Title (ST)</th>
+                                    <th>Category</th>
+                                    <th>Difficulty</th>
+                                    <th>Status</th>
+                                    <th>Created By</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for quiz in quizzes %}
+                                <tr>
+                                    <td>{{ quiz.title_en }}</td>
+                                    <td>{{ quiz.title_st }}</td>
+                                    <td>
+                                        {% if session.get('language') == 'st' %}
+                                            {{ quiz.category_name_st }}
+                                        {% else %}
+                                            {{ quiz.category_name_en }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if quiz.difficulty == 'easy' %}success{% elif quiz.difficulty == 'medium' %}warning{% else %}danger{% endif %}">
+                                            {{ _(quiz.difficulty) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if quiz.is_active %}success{% else %}secondary{% endif %}">
+                                            {{ 'Active' if quiz.is_active else 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ quiz.created_by_name }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('manage_questions', quiz_id=quiz.id) }}" 
+                                               class="btn btn-outline-primary" title="Manage Questions">
+                                                <i class="fas fa-question-circle"></i>
+                                            </a>
+                                            <form action="{{ url_for('toggle_quiz', quiz_id=quiz.id) }}" method="POST" class="d-inline">
+                                                <button type="submit" class="btn btn-{% if quiz.is_active %}warning{% else %}success{% endif %}" 
+                                                        title="{% if quiz.is_active %}Deactivate{% else %}Activate{% endif %}">
+                                                    <i class="fas fa-{% if quiz.is_active %}pause{% else %}play{% endif %}"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No quizzes created yet.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

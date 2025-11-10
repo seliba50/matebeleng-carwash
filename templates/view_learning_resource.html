@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('learning_resources') }}">Learning Resources</a></li>
+                    <li class="breadcrumb-item active">
+                        {% if session.get('language') == 'st' %}
+                            {{ resource.title_st }}
+                        {% else %}
+                            {{ resource.title_en }}
+                        {% endif %}
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-{% if resource.resource_type == 'article' %}file-alt{% elif resource.resource_type == 'video' %}video{% elif resource.resource_type == 'guide' %}book{% else %}lightbulb{% endif %}"></i>
+                        {% if session.get('language') == 'st' %}
+                            {{ resource.title_st }}
+                        {% else %}
+                            {{ resource.title_en }}
+                        {% endif %}
+                    </h4>
+                    <small>
+                        Category: 
+                        {% if session.get('language') == 'st' %}
+                            {{ resource.category_name_st }}
+                        {% else %}
+                            {{ resource.category_name_en }}
+                        {% endif %}
+                        | Difficulty: <span class="badge bg-{% if resource.difficulty == 'beginner' %}success{% elif resource.difficulty == 'intermediate' %}warning{% else %}danger{% endif %}">{{ resource.difficulty|title }}</span>
+                    </small>
+                </div>
+                <div class="card-body">
+                    <div class="learning-content">
+                        {% if session.get('language') == 'st' %}
+                            {{ resource.content_st|replace('\n', '<br>')|safe }}
+                        {% else %}
+                            {{ resource.content_en|replace('\n', '<br>')|safe }}
+                        {% endif %}
+                    </div>
+                    
+                    {% if resource.url %}
+                    <div class="mt-4">
+                        <a href="{{ resource.url }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt"></i> View External Resource
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <button id="markCompleteBtn" class="btn btn-success">
+                        <i class="fas fa-check"></i> Mark as Completed
+                    </button>
+                    <a href="{{ url_for('learning_resources') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Resources
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Related Quizzes</h5>
+                </div>
+                <div class="card-body">
+                    {% if resource.category_id %}
+                    <p>Test your knowledge with quizzes in this category:</p>
+                    <a href="{{ url_for('quizzes') }}?category={{ resource.category_id }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-question-circle"></i> Take Related Quiz
+                    </a>
+                    {% else %}
+                    <p>No related quizzes available.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-lightbulb text-warning"></i> Take notes while reading</li>
+                        <li><i class="fas fa-lightbulb text-warning"></i> Review difficult concepts</li>
+                        <li><i class="fas fa-lightbulb text-warning"></i> Practice with quizzes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const markCompleteBtn = document.getElementById('markCompleteBtn');
+    
+    markCompleteBtn.addEventListener('click', function() {
+        fetch('{{ url_for("mark_resource_completed", resource_id=resource.id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                markCompleteBtn.innerHTML = '<i class="fas fa-check"></i> Completed!';
+                markCompleteBtn.classList.remove('btn-success');
+                markCompleteBtn.classList.add('btn-outline-success');
+                markCompleteBtn.disabled = true;
+            } else {
+                alert('Error marking resource as completed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error marking resource as completed');
+        });
+    });
+});
+</script>
+{% endblock %}

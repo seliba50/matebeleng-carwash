@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-{% if attempt.percentage >= 80 %}success{% elif attempt.percentage >= 50 %}warning{% else %}danger{% endif %} text-white text-center">
+                    <h3 class="mb-0"><i class="fas fa-trophy"></i> {{ _('quiz_results') }}</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="results-summary mb-4">
+                        <h2 class="display-4 fw-bold text-{% if attempt.percentage >= 80 %}success{% elif attempt.percentage >= 50 %}warning{% else %}danger{% endif %}">
+                            {{ attempt.percentage }}%
+                        </h2>
+                        <p class="lead">
+                            {{ _('your_score') }}: <strong>{{ attempt.score }}/{{ attempt.total_questions }}</strong>
+                        </p>
+                    </div>
+                    
+                    <div class="row text-center mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5>{{ attempt.score }}</h5>
+                                    <small>Correct Answers</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5>{{ attempt.total_questions - attempt.score }}</h5>
+                                    <small>Incorrect Answers</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5>{{ attempt.total_questions }}</h5>
+                                    <small>Total Questions</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if attempt.percentage >= 80 %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-certificate"></i> 
+                        <strong>Congratulations!</strong> You've qualified for a certificate!
+                    </div>
+                    {% elif attempt.percentage >= 50 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-check-circle"></i> 
+                        Good effort! Review the topics and try again to improve your score.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-book"></i> 
+                        Keep learning! Review the cybersecurity materials and try the quiz again.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('quizzes') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-list"></i> Back to Quizzes
+                        </a>
+                        <a href="{{ url_for('take_quiz', quiz_id=attempt.quiz_id) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-redo"></i> Retake Quiz
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    {{ _('completed') }}: {{ attempt.completed_at.strftime('%Y-%m-%d %H:%M') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

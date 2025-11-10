@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-award"></i> My Certificates</h2>
+            <p class="text-muted">Your earned cybersecurity awareness certificates</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if certificates %}
+            <div class="row">
+                {% for certificate in certificates %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card certificate-card h-100">
+                        <div class="card-header bg-warning text-dark text-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-certificate"></i>
+                                {% if session.get('language') == 'st' %}
+                                    Setifikeiti
+                                {% else %}
+                                    Certificate
+                                {% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="certificate-icon mb-3">
+                                <i class="fas fa-award fa-3x text-warning"></i>
+                            </div>
+                            <h6 class="card-title">
+                                {% if session.get('language') == 'st' %}
+                                    {{ certificate.title_st }}
+                                {% else %}
+                                    {{ certificate.title_en }}
+                                {% endif %}
+                            </h6>
+                            <p class="card-text">
+                                <strong>Score:</strong> {{ certificate.score }}/{{ certificate.total_questions }} ({{ certificate.percentage }}%)<br>
+                                <strong>Issued:</strong> {{ certificate.issued_at.strftime('%Y-%m-%d') }}<br>
+                                <small class="text-muted">ID: {{ certificate.certificate_number }}</small>
+                            </p>
+                        </div>
+                        <div class="card-footer text-center">
+                            <a href="{{ url_for('download_certificate', certificate_id=certificate.id) }}" 
+                               class="btn btn-primary btn-sm" target="_blank">
+                                <i class="fas fa-download"></i> View Certificate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-certificate fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No Certificates Yet</h5>
+                <p class="text-muted">
+                    {% if session.get('language') == 'st' %}
+                        U sa so fumane lisetifikeiti. Etsa li-quiz tse ling 'me u fumane bonyane 80% ho fumana setifikeiti.
+                    {% else %}
+                        You haven't earned any certificates yet. Take more quizzes and score at least 80% to earn a certificate.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('quizzes') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play-circle"></i> Take a Quiz
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+.certificate-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.certificate-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+</style>
